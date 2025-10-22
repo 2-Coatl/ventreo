@@ -1,0 +1,44 @@
+# frozen_string_literal: true
+
+Vagrant.configure('2') do |config|
+  config.vm.box = ENV.fetch('SECURITYRAT_VAGRANT_BOX', 'bento/ubuntu-22.04')
+  config.vm.hostname = 'securityrat'
+  config.vm.network 'forwarded_port', guest: 8080, host: 8080
+
+  config.vm.provision 'shell', privileged: true, inline: <<-'SHELL'
+    set -eux
+
+    if ! command -v docker >/dev/null 2>&1; then
+      apt-get update -y
+      apt-get install -y \
+        apt-transport-https \
+        ca-certificates \
+        curl \
+        gnupg \
+        lsb-release
+
+      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+      echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list >/dev/null
+      apt-get update -y
+      apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+    fi
+
+    usermod -aG docker vagrant
+  SHELL
+
+  compose_env = {
+    'SECURITYRAT_IMAGE' => ENV['SECURITYRAT_IMAGE'],
+    'SECURITYRAT_JAVA_OPTS' => ENV['SECURITYRAT_JAVA_OPTS'],
+  }.reject { |_key, value| value.nil? }
+
+  config.vm.provision 'shell', run: 'always', privileged: true, env: compose_env, inline: <<-'SHELL'
+    set -eux
+    cd /vagrant/docs/security/securityrat
+    docker compose pull || true
+    docker compose up -d --build
+  SHELL
+
+  config.vm.post_up_message = <<-MESSAGE
+SecurityRAT queda disponible en http://localhost:8080\n`make securityrat-logs` para revisar el estado del contenedor.
+  MESSAGE
+end
