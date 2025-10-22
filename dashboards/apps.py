@@ -8,6 +8,6 @@ class DashboardsConfig(AppConfig):
     """Expose persona dashboards as a Django app."""
 
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'modules.dashboards'
+    name = 'dashboards'
     label = 'dashboards'
     verbose_name = 'Persona Dashboards'

@@ -8,6 +8,6 @@ class NotificationsConfig(AppConfig):
     """Expose the alerting logic as a Django app."""
 
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'modules.notifications'
+    name = 'notifications'
     label = 'notifications'
     verbose_name = 'Alerts & Notifications'

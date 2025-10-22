@@ -4,7 +4,7 @@ from __future__ import annotations
 from rest_framework import serializers
 
 from .models import Dashboard, DashboardAction, DashboardKPI
-from modules.identity.serializers import RoleSerializer
+from identity.serializers import RoleSerializer
 
 
 class DashboardKPISerializer(serializers.ModelSerializer):

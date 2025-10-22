@@ -4,7 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Mapping, Sequence
 
-from modules.identity import Role
+from identity.domain import Role
 
 
 @dataclass(frozen=True)

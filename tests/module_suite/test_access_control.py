@@ -3,9 +3,9 @@ from __future__ import annotations
 
 from rest_framework.test import APIClient
 
-from modules.access_control.models import Sheet, SheetPermission
-from modules.access_control.services import resolve_sheet_permissions
-from modules.identity.models import Role
+from access_control.models import Sheet, SheetPermission
+from access_control.services import resolve_sheet_permissions
+from identity.models import Role
 
 
 def test_permissions_endpoint_returns_flags_for_sheet() -> None:
