@@ -11,10 +11,18 @@ dependencies = []
 [tool.black]
 line-length = 88
 target-version = ["py311"]
-include = '\.pyi?$'
-exclude = '''
-/(\.venv|venv|build|dist|.git|.mypy_cache|__pycache__)/
-'''
+include = "\\.pyi?$"
+extend-exclude = """
+/(
+    \\.venv
+    |venv
+    |build
+    |dist
+    |\\.git
+    |\\.mypy_cache
+    |__pycache__
+)
+/"""
 
 [tool.isort]
 profile = "black"
