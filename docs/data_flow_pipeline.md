@@ -1,5 +1,7 @@
 # 3.5 SecurityRAT
 
+> **Nota:** La integración específica para el modelo financiero se detalla en [`docs/security/securityrat.md`](security/securityrat.md), donde se enlazan los requisitos ASVS con los casos de uso UC-001–UC-022.
+
 El ==[OWASP SecurityRAT]== (Requirement Automation Tool - Herramienta de Automatización de Requisitos) se utiliza para generar y gestionar requisitos de seguridad usando información del proyecto ==[OWASP ASVS]==. También proporciona un enfoque automatizado para la gestión de requisitos durante el desarrollo de aplicaciones frontend, de servidor y móviles.
 
 > Nota contextual importante: SecurityRAT es una herramienta complementaria del ASVS que facilita la gestión práctica de los más de 280 requisitos de seguridad que propone el estándar ASVS, haciéndolos más manejables para equipos de desarrollo.

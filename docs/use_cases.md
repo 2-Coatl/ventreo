@@ -19,6 +19,13 @@ Este documento actúa como índice maestro. Cada caso de uso está descrito en u
 | UC-013 | Supervisar reglas de alerta RBAC | Notificaciones | CFO, Controller, Super Admin | [docs/use_cases/UC-013-supervisar-reglas-alerta.md](use_cases/UC-013-supervisar-reglas-alerta.md) |
 | UC-014 | Configurar canales de alerta | Infraestructura de notificaciones | Super Admin, IT | [docs/use_cases/UC-014-configurar-canales-alerta.md](use_cases/UC-014-configurar-canales-alerta.md) |
 | UC-015 | Monitorear bitácora de auditoría | Auditoría y cumplimiento | Auditor, Super Admin, CFO | [docs/use_cases/UC-015-monitorear-bitacora-auditoria.md](use_cases/UC-015-monitorear-bitacora-auditoria.md) |
+| UC-016 | Catalogar roles jerárquicos del RBAC | Identidades | Super Admin, Equipo de Seguridad | [docs/use_cases/UC-016-catalogar-roles-rbac.md](use_cases/UC-016-catalogar-roles-rbac.md) |
+| UC-017 | Consolidar roles multifuente | Identidades | Administrador de Identidad, Mesa de Soporte | [docs/use_cases/UC-017-consolidar-roles-multifuente.md](use_cases/UC-017-consolidar-roles-multifuente.md) |
+| UC-018 | Identificar el rol de mayor privilegio | Compliance | Auditor Interno, Super Admin | [docs/use_cases/UC-018-identificar-rol-maximo.md](use_cases/UC-018-identificar-rol-maximo.md) |
+| UC-019 | Calcular permisos efectivos sobre una hoja | Control de accesos | Controller, Super Admin, Auditor | [docs/use_cases/UC-019-calcular-permisos-hoja.md](use_cases/UC-019-calcular-permisos-hoja.md) |
+| UC-020 | Derivar destinatarios por severidad de alerta | Notificaciones | CFO, Controller, IT Ops | [docs/use_cases/UC-020-derivar-destinatarios-alertas.md](use_cases/UC-020-derivar-destinatarios-alertas.md) |
+| UC-021 | Auditar reglas de alerta por rol | Notificaciones | Auditor, Super Admin, CFO | [docs/use_cases/UC-021-auditar-reglas-por-rol.md](use_cases/UC-021-auditar-reglas-por-rol.md) |
+| UC-022 | Operar bitácora en memoria para respuestas rápidas | Auditoría operativa | Equipo de Incidentes, Auditor | [docs/use_cases/UC-022-operar-bitacora-in-memory.md](use_cases/UC-022-operar-bitacora-in-memory.md) |
 
 ## Cobertura del pipeline
 
@@ -33,5 +40,8 @@ Este documento actúa como índice maestro. Cada caso de uso está descrito en u
 - **Fase 8:** Documentación del pipeline y auditorías (`UC-012`, `UC-015`).
 - **Fase 9:** Dashboards por rol (`UC-008`).
 - **Capa transversal de identidad y permisos:** (`UC-010`, `UC-011`).
+- **Inventario y gobernanza de roles:** (`UC-016`, `UC-017`, `UC-018`).
+- **Evaluación granular de permisos y auditoría operativa:** (`UC-019`, `UC-022`).
+- **Cobertura avanzada de notificaciones:** (`UC-020`, `UC-021`).
 
 Cada artefacto referencia directamente las constantes y servicios descritos en `finance/domain.py`, `access_control`, `dashboards` y `notifications`, garantizando que la arquitectura modular comunique intención y responsabilidades según los principios de Clean Architecture.
