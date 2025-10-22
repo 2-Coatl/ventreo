@@ -28,6 +28,7 @@ build/
 dist/
 *.egg
 .eggs/
+build-artifacts/
 
 # OS
 .DS_Store
