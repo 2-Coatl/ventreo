@@ -31,3 +31,15 @@ def test_python_can_locate_site_settings_module() -> None:
     assert spec is not None
     assert spec.origin is not None
     assert spec.origin.endswith('site/settings.py')
+
+
+def test_domain_apps_are_packaged_at_project_root() -> None:
+    """Domain apps live alongside ``authentication`` at the repository root."""
+
+    identity = util.find_spec('identity')
+    access_control = util.find_spec('access_control')
+
+    assert identity is not None
+    assert access_control is not None
+    assert identity.origin is not None and identity.origin.endswith('identity/__init__.py')
+    assert access_control.origin is not None and access_control.origin.endswith('access_control/__init__.py')

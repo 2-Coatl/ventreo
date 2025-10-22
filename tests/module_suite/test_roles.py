@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from rest_framework.test import APIClient
 
-from modules.identity.models import Role, RoleBundle
-from modules.identity.services import highest_privilege_role
+from identity.models import Role, RoleBundle
+from identity.services import highest_privilege_role
 
 
 def test_role_listing_returns_seeded_roles() -> None:

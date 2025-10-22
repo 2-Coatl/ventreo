@@ -8,6 +8,6 @@ class IdentityConfig(AppConfig):
     """Configure the identity module."""
 
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'modules.identity'
+    name = 'identity'
     label = 'identity'
     verbose_name = 'Identity & Accounts'

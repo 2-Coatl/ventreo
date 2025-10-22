@@ -4,7 +4,7 @@ from __future__ import annotations
 from rest_framework import serializers
 
 from .models import Sheet, SheetPermission
-from modules.identity.serializers import RoleSerializer
+from identity.serializers import RoleSerializer
 
 
 class SheetPermissionSerializer(serializers.ModelSerializer):

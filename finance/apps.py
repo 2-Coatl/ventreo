@@ -8,6 +8,6 @@ class FinanceConfig(AppConfig):
     """Expose finance helpers as a Django app."""
 
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'modules.finance'
+    name = 'finance'
     label = 'finance'
     verbose_name = 'Finance & Modelling'

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from django.db import models
 
-from modules.identity.models import Role
+from identity.models import Role
 
 
 class AlertRule(models.Model):

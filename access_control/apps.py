@@ -8,6 +8,6 @@ class AccessControlConfig(AppConfig):
     """Register RBAC helpers as a Django app."""
 
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'modules.access_control'
+    name = 'access_control'
     label = 'access_control'
     verbose_name = 'Access Control'
