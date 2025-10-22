@@ -61,6 +61,12 @@ INSTALLED_APPS = [
     'django_ratelimit',
     # Local apps
     'authentication',
+    'modules.identity',
+    'modules.access_control',
+    'modules.audit',
+    'modules.finance',
+    'modules.dashboards',
+    'modules.notifications',
 ]
 
 MIDDLEWARE = [
