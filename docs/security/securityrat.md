@@ -76,6 +76,24 @@ Esta guía complementa la documentación de pipeline (`docs/data_flow_pipeline.m
 
 > **Sugerencia:** crear un atributo personalizado `use_case` en SecurityRAT y asociarlo al código correspondiente (`UC-0XX`).
 
+### 4.1 Implementación operativa de los casos de uso
+
+1. **Crear un requerimiento base** en SecurityRAT por cada caso de uso documentado en `docs/use_cases/`. Para acelerar el proceso:
+   - Utiliza la plantilla `ventreo-rbac-L2.json` generada en la sección 3 y duplica la fila correspondiente.
+   - Completa los metadatos `use_case`, `owner` y `milestone` siguiendo la tabla anterior.
+2. **Relacionar controles ASVS específicos** mediante etiquetas adicionales:
+   - Para requisitos críticos (por ejemplo UC-019 o UC-022) agrega la etiqueta `critical` y asigna un `Due Date` en el mismo sprint.
+   - Cuando un caso de uso involucre integraciones externas (UC-006, UC-020), añade una referencia cruzada al proveedor externo en el campo `External Reference`.
+3. **Vincular evidencia de implementación** desde el repositorio:
+   - Añade el enlace al archivo del caso de uso (`docs/use_cases/UC-0XX-*.md`) dentro del campo `Description` de SecurityRAT.
+   - Registra el PR o commit que satisface el requisito en el campo `Implementation Ticket` para simplificar auditorías.
+4. **Automatizar el seguimiento dentro del sprint**:
+   - Ejecuta `make securityrat-export` al cerrar cada historia para versionar la evidencia generada en `docs/security/securityrat_exports/<timestamp>/`.
+   - Revisa los resultados con `make securityrat-logs` cuando se modifiquen requisitos o etiquetas para validar que el contenedor siga activo.
+5. **Sincronizar los estados** antes de liberar:
+   - Marca en SecurityRAT los requisitos asociados a los casos de uso completados con estado `Done`.
+   - Actualiza el catálogo de casos de uso indicando los controles implantados y referencia el archivo exportado desde SecurityRAT en la sección de auditoría del PR.
+
 ---
 
 ## 5. Flujo operativo recomendado
