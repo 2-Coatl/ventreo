@@ -1,21 +1,44 @@
 # frozen_string_literal: true
 
-require 'fileutils'
-
 Vagrant.configure('2') do |config|
-  config.vm.provider 'docker' do |docker|
-    docker.name = 'ventreo-securityrat'
-    docker.image = ENV.fetch('SECURITYRAT_IMAGE', 'securityrat/securityrat:latest')
-    docker.ports = ['8080:8080']
-    docker.remains_running = true
-    docker.has_ssh = false
+  config.vm.box = ENV.fetch('SECURITYRAT_VAGRANT_BOX', 'bento/ubuntu-22.04')
+  config.vm.hostname = 'securityrat'
+  config.vm.network 'forwarded_port', guest: 8080, host: 8080
 
-    exports_dir = File.expand_path('../securityrat_exports', __dir__)
-    FileUtils.mkdir_p(exports_dir)
-    docker.volumes = ["#{exports_dir}:/opt/securityrat/exports"]
+  config.vm.provision 'shell', privileged: true, inline: <<-'SHELL'
+    set -eux
 
-    docker.env = {
-      'JAVA_OPTS' => ENV.fetch('SECURITYRAT_JAVA_OPTS', '-Xms256m -Xmx768m'),
-    }
-  end
+    if ! command -v docker >/dev/null 2>&1; then
+      apt-get update -y
+      apt-get install -y \
+        apt-transport-https \
+        ca-certificates \
+        curl \
+        gnupg \
+        lsb-release
+
+      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+      echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list >/dev/null
+      apt-get update -y
+      apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+    fi
+
+    usermod -aG docker vagrant
+  SHELL
+
+  compose_env = {
+    'SECURITYRAT_IMAGE' => ENV['SECURITYRAT_IMAGE'],
+    'SECURITYRAT_JAVA_OPTS' => ENV['SECURITYRAT_JAVA_OPTS'],
+  }.reject { |_key, value| value.nil? }
+
+  config.vm.provision 'shell', run: 'always', privileged: true, env: compose_env, inline: <<-'SHELL'
+    set -eux
+    cd /vagrant/docs/security/securityrat
+    docker compose pull || true
+    docker compose up -d --build
+  SHELL
+
+  config.vm.post_up_message = <<-MESSAGE
+SecurityRAT queda disponible en http://localhost:8080\n`make securityrat-logs` para revisar el estado del contenedor.
+  MESSAGE
 end

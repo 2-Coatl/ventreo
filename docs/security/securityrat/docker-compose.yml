@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  securityrat:
+    container_name: ventreo-securityrat
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SECURITYRAT_IMAGE: ${SECURITYRAT_IMAGE:-securityrat/securityrat:latest}
+    ports:
+      - "8080:8080"
+    environment:
+      JAVA_OPTS: ${SECURITYRAT_JAVA_OPTS:-"-Xms256m -Xmx768m"}
+    volumes:
+      - ../securityrat_exports:/opt/securityrat/exports
+    restart: unless-stopped

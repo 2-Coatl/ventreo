@@ -36,12 +36,12 @@ shell:
 	$(MANAGE) shell
 
 SECURITYRAT_DIR?=docs/security/securityrat
-SECURITYRAT_CONTAINER?=ventreo-securityrat
+SECURITYRAT_SERVICE?=securityrat
 SECURITYRAT_EXPORT_DIR?=docs/security/securityrat_exports
 SECURITYRAT_EXPORT_PATH?=/opt/securityrat/exports
 
 securityrat-up:
-	cd $(SECURITYRAT_DIR) && vagrant up --provider=docker
+	cd $(SECURITYRAT_DIR) && vagrant up --provision
 
 securityrat-halt:
 	cd $(SECURITYRAT_DIR) && vagrant halt
@@ -50,12 +50,12 @@ securityrat-destroy:
 	cd $(SECURITYRAT_DIR) && vagrant destroy -f
 
 securityrat-logs:
-	cd $(SECURITYRAT_DIR) && vagrant docker-logs
+	cd $(SECURITYRAT_DIR) && vagrant ssh -c "cd /vagrant/$(SECURITYRAT_DIR) && docker compose logs --tail=200 $(SECURITYRAT_SERVICE)"
 
 securityrat-export:
 	@timestamp=$$(date +%Y%m%d-%H%M%S); \
 	dest=$(SECURITYRAT_EXPORT_DIR)/$$timestamp; \
 	echo "Exportando artefactos SecurityRAT a $$dest"; \
 	mkdir -p $$dest; \
-	command -v docker >/dev/null 2>&1 || { echo 'Docker no está instalado en el host.'; exit 1; }; \
-	docker cp $(SECURITYRAT_CONTAINER):$(SECURITYRAT_EXPORT_PATH)/. $$dest
+	cd $(SECURITYRAT_DIR) && \
+	vagrant ssh -c "cd /vagrant/$(SECURITYRAT_DIR) && mkdir -p /vagrant/$(SECURITYRAT_EXPORT_DIR)/$$timestamp && docker compose cp $(SECURITYRAT_SERVICE):$(SECURITYRAT_EXPORT_PATH)/. /vagrant/$(SECURITYRAT_EXPORT_DIR)/$$timestamp && chown -R vagrant:vagrant /vagrant/$(SECURITYRAT_EXPORT_DIR)/$$timestamp"
