@@ -4,11 +4,10 @@ from __future__ import annotations
 import argparse
 import logging
 import os
-from pathlib import Path
-import sys
-from typing import Iterable, Iterator, Sequence
-
 import re
+import sys
+from pathlib import Path
+from typing import Iterable, Iterator, Sequence
 
 LOG_FORMAT = "%(message)s"
 logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
@@ -94,7 +93,11 @@ def iter_directory(directory: Path, excluded: set[Path]) -> Iterator[Path]:
             dirs[:] = []
             continue
 
-        dirs[:] = [d for d in dirs if not _is_excluded((root_path / d).resolve(), excluded)]
+        dirs[:] = [
+            directory
+            for directory in dirs
+            if not _is_excluded((root_path / directory).resolve(), excluded)
+        ]
 
         for file_name in files:
             file_path = (root_path / file_name).resolve()

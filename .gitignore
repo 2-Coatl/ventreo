@@ -13,6 +13,7 @@ ENV/
 
 # Tooling
 .mypy_cache/
+.ruff_cache/
 .pytest_cache/
 .tox/
 .coverage
@@ -28,6 +29,8 @@ build/
 dist/
 *.egg
 .eggs/
+build-artifacts/
+.vagrant/
 
 # OS
 .DS_Store
