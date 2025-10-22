@@ -30,6 +30,19 @@
   El directorio [`tests/`](tests/) queda reservado para las suites de pruebas unitarias y de integración.
 - Utiliza ramas descriptivas y commits atómicos siguiendo la convención `tipo/scope-descripcion`.
 
+### Entorno reproducible con Vagrant
+
+Para evitar consumir minutos del plan GitHub Free puedes levantar un entorno de integración aislado con [Vagrant](https://www.vagrantup.com/):
+
+1. Instala Vagrant y VirtualBox (u otro proveedor compatible).
+2. Desde la raíz del repositorio ejecuta:
+   ```bash
+   vagrant up
+   ```
+   Este comando prepara una máquina Ubuntu 22.04, crea un entorno virtual con Python 3.11, instala dependencias y lanza `./scripts/run_ci.sh`.
+3. Para repetir la verificación posteriormente utiliza `vagrant provision` o ingresa con `vagrant ssh` y ejecuta manualmente el script dentro de `/workspace`.
+4. Cuando termines, destruye la máquina con `vagrant destroy` para liberar recursos locales.
+
 ## CI/CD
 
 - Configura pipelines en tu herramienta preferida (por ejemplo, GitHub Actions o GitLab CI) que incluyan pasos de linting, pruebas y despliegue.

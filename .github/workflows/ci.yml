@@ -1,5 +1,9 @@
 name: CI
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:
@@ -33,6 +37,8 @@ jobs:
           pip install -r requirements.txt pytest ruff
 
       - name: Run CI script
+        env:
+          CI_SKIP_BYTECODE: "1"
         run: ./scripts/run_ci.sh
 
       - name: Upload compiled artifacts

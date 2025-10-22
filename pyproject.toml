@@ -1,18 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ventreo"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = []
+
 [tool.black]
 line-length = 88
 target-version = ["py311"]
-include = '\.pyi?$'
-exclude = '''
+include = "\\.pyi?$"
+extend-exclude = """
 /(
-    \.venv
+    \\.venv
     |venv
     |build
     |dist
-    |\.git
-    |\.mypy_cache
+    |\\.git
+    |\\.mypy_cache
     |__pycache__
 )
-/'''
+/"""
 
 [tool.isort]
 profile = "black"
@@ -20,19 +30,20 @@ line_length = 88
 known_first_party = []
 skip = ["venv", ".venv", "build", "dist"]
 
-[tool.flake8]
-max-line-length = 88
-extend-ignore = ["E203", "W503"]
-exclude = [".git", "__pycache__", "build", "dist", "venv", ".venv"]
-max-complexity = 10
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+extend-exclude = ["build", "dist", "venv", ".venv", "__pycache__"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = "-ra"
 
 [tool.bandit]
 targets = ["."]
 exclude = ["tests", "venv", ".venv", "build", "dist"]
 skips = ["B101"]
-
-[project]
-name = "ventreo"
-version = "0.1.0"
-requires-python = ">=3.11"
-dependencies = []
