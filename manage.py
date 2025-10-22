@@ -3,6 +3,8 @@
 import os
 import sys
 
+import site_bootstrap  # noqa: F401  Ensure ``site`` package exposes project modules.
+
 
 def main() -> None:
     """Run administrative tasks."""
