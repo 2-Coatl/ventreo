@@ -1,0 +1,1 @@
+"""Ventreo Django project package."""
