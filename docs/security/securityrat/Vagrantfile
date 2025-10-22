@@ -1,0 +1,21 @@
+# frozen_string_literal: true
+
+require 'fileutils'
+
+Vagrant.configure('2') do |config|
+  config.vm.provider 'docker' do |docker|
+    docker.name = 'ventreo-securityrat'
+    docker.image = ENV.fetch('SECURITYRAT_IMAGE', 'securityrat/securityrat:latest')
+    docker.ports = ['8080:8080']
+    docker.remains_running = true
+    docker.has_ssh = false
+
+    exports_dir = File.expand_path('../securityrat_exports', __dir__)
+    FileUtils.mkdir_p(exports_dir)
+    docker.volumes = ["#{exports_dir}:/opt/securityrat/exports"]
+
+    docker.env = {
+      'JAVA_OPTS' => ENV.fetch('SECURITYRAT_JAVA_OPTS', '-Xms256m -Xmx768m'),
+    }
+  end
+end

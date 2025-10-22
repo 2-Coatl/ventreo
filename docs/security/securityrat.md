@@ -14,15 +14,21 @@ Esta guía complementa la documentación de pipeline (`docs/data_flow_pipeline.m
 
 ## 2. Preparación del entorno
 
-1. **Seleccionar modalidad de despliegue**
-   - Docker: `docker run -p 8080:8080 securityrat/securityrat:latest`
-   - JDK 11: descargar `securityrat.war` y ejecutar `java -jar securityrat.war`
-2. **Crear proyecto `ventreo-rbac`**
+1. **Provisionar SecurityRAT con Vagrant + Docker**
+   - Ejecutar `make securityrat-up` para iniciar el contenedor `securityrat/securityrat:latest` mediante `docs/security/securityrat/Vagrantfile`.
+   - Validar disponibilidad en `http://localhost:8080` y revisar logs con `make securityrat-logs` en caso de incidentes.
+   - Detener o destruir la instancia usando `make securityrat-halt` y `make securityrat-destroy` respectivamente.
+2. **(Opcional) Alternativas manuales**
+   - Docker directo: `docker run -p 8080:8080 securityrat/securityrat:latest`.
+   - JDK 11: descargar `securityrat.war` y ejecutar `java -jar securityrat.war`.
+3. **Crear proyecto `ventreo-rbac`**
    - Configurar atributos personalizados: tamaño de empresa, bundle de roles, severidad de alertas.
    - Importar slugs desde `identity/models.py` y `notifications/models.py`.
-3. **Habilitar integración con repositorio**
-   - Definir carpeta `docs/security/securityrat_exports/` para evidencias.
-   - Versionar los reportes exportados (`json`, `xlsx`) por liberación.
+4. **Habilitar integración con repositorio**
+   - Definir carpeta `docs/security/securityrat_exports/` para evidencias (volumen compartido con el contenedor).
+   - Versionar los reportes exportados (`json`, `xlsx`) por liberación utilizando `make securityrat-export` cuando se requiera copiar artefactos desde el contenedor.
+
+> **Tip:** el Vagrantfile expone la variable `SECURITYRAT_IMAGE` para fijar una etiqueta concreta (`make securityrat-up SECURITYRAT_IMAGE=securityrat/securityrat:2.12`).
 
 ---
 
@@ -77,7 +83,19 @@ Esta guía complementa la documentación de pipeline (`docs/data_flow_pipeline.m
 1. **Planificación:** al crear una nueva funcionalidad, asignar requisitos SecurityRAT en base al caso de uso afectado.
 2. **Ejecución:** actualizar el estado del requisito (To Do → In Progress → Done) conforme se implementa y prueba.
 3. **Verificación:** exportar el tablero de requisitos y adjuntarlo en el PR junto con referencias a `docs/use_cases/`.
-4. **Auditoría:** en cada liberación, ejecutar `make securityrat-export` (script sugerido) para guardar evidencias en `docs/security/securityrat_exports/YYMMDD/`.
+4. **Auditoría:** en cada liberación, ejecutar `make securityrat-export` para guardar evidencias en `docs/security/securityrat_exports/YYMMDD-HHMMSS/`.
+
+### 5.1 Checklist automatizado con Make
+
+| Tarea | Comando | Resultado esperado |
+| --- | --- | --- |
+| Provisionar SecurityRAT | `make securityrat-up` | Contenedor levantado mediante Vagrant + Docker |
+| Revisar logs | `make securityrat-logs` | Diagnóstico de inicio o incidencias |
+| Exportar evidencias | `make securityrat-export` | Copia de `/opt/securityrat/exports` a `docs/security/securityrat_exports/<timestamp>/` |
+| Detener servicio temporalmente | `make securityrat-halt` | Contenedor apagado manteniendo configuración |
+| Limpiar entorno | `make securityrat-destroy` | Eliminación completa del contenedor |
+
+> **Análisis de tareas:** antes de cada liberación confirmar que (1) el contenedor está activo, (2) los requisitos afectados en SecurityRAT están en estado "Done", (3) los artefactos exportados se almacenaron en el timestamp correcto y (4) los casos de uso vinculados (`UC-0XX`) quedaron documentados en el PR correspondiente. Recuerda que `make securityrat-export` requiere el binario `docker` disponible en el host para copiar los archivos del volumen compartido.
 
 ---
 
