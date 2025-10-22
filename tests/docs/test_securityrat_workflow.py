@@ -53,3 +53,12 @@ def test_makefile_targets_use_vagrant_and_compose():
     assert "vagrant ssh -c \"cd /vagrant/docs/security/securityrat" in export_output
     assert "docker compose cp securityrat:/opt/securityrat/exports/." in export_output
     assert "chown -R vagrant:vagrant" in export_output
+
+
+def test_securityrat_doc_describes_use_case_implementation():
+    guide = (REPO_ROOT / "docs/security/securityrat.md").read_text(encoding="utf-8")
+
+    assert "### 4.1 Implementación operativa de los casos de uso" in guide
+    assert "Crear un requerimiento base" in guide
+    assert "docs/use_cases/UC-0XX-*.md" in guide
+    assert "make securityrat-export" in guide
