@@ -14,8 +14,18 @@ def test_role_listing_returns_seeded_roles() -> None:
     Role.objects.all().delete()
     Role.objects.bulk_create(
         [
-            Role(slug='ceo', name='CEO', hierarchy_level=2, description='Chief executive role.'),
-            Role(slug='cfo', name='CFO', hierarchy_level=3, description='Finance lead.'),
+            Role(
+                slug='ceo',
+                name='CEO',
+                hierarchy_level=2,
+                description='Chief executive role.',
+            ),
+            Role(
+                slug='cfo',
+                name='CFO',
+                hierarchy_level=3,
+                description='Finance lead.',
+            ),
         ]
     )
     client = APIClient()
@@ -30,9 +40,23 @@ def test_bundle_endpoint_includes_nested_roles() -> None:
 
     RoleBundle.objects.all().delete()
     Role.objects.all().delete()
-    ceo = Role.objects.create(slug='ceo', name='CEO', hierarchy_level=2, description='Executive leader')
-    cfo = Role.objects.create(slug='cfo', name='CFO', hierarchy_level=3, description='Finance lead')
-    bundle = RoleBundle.objects.create(key='small', title='Pequeña empresa', description='Separación CEO/CFO')
+    ceo = Role.objects.create(
+        slug='ceo',
+        name='CEO',
+        hierarchy_level=2,
+        description='Executive leader',
+    )
+    cfo = Role.objects.create(
+        slug='cfo',
+        name='CFO',
+        hierarchy_level=3,
+        description='Finance lead',
+    )
+    bundle = RoleBundle.objects.create(
+        key='small',
+        title='Pequeña empresa',
+        description='Separación CEO/CFO',
+    )
     bundle.roles.set([ceo, cfo])
 
     client = APIClient()
@@ -51,9 +75,24 @@ def test_highest_privilege_role_returns_lowest_hierarchy_level() -> None:
     Role.objects.all().delete()
     Role.objects.bulk_create(
         [
-            Role(slug='viewer', name='Viewer', hierarchy_level=7, description='Lectura únicamente'),
-            Role(slug='controller', name='Controller', hierarchy_level=4, description='Control presupuestal'),
-            Role(slug='super_admin', name='Super Admin', hierarchy_level=1, description='Acceso total'),
+            Role(
+                slug='viewer',
+                name='Viewer',
+                hierarchy_level=7,
+                description='Lectura únicamente',
+            ),
+            Role(
+                slug='controller',
+                name='Controller',
+                hierarchy_level=4,
+                description='Control presupuestal',
+            ),
+            Role(
+                slug='super_admin',
+                name='Super Admin',
+                hierarchy_level=1,
+                description='Acceso total',
+            ),
         ]
     )
     highest = highest_privilege_role(['controller', 'viewer', 'super_admin'])
