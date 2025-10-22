@@ -1,17 +1,29 @@
 name: CI
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
-    branches: ["main", "master", "develop", "ci-test", "*/*"]
+    branches:
+      - main
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
   pull_request:
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
   workflow_dispatch:
 
 jobs:
-  quality-checks:
-    name: Quality Checks
+  ci:
+    name: Lint, test and package
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
     steps:
-      - name: Checkout repository
+      - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -19,52 +31,19 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install quality dependencies
-        if: hashFiles('requirements-dev.txt') != ''
-        run: pip install -r requirements-dev.txt
-
-      - name: Install Ruff linter
-        run: pip install --upgrade pip ruff
-
-      - name: Run Ruff linting
-        run: ruff check .
-
-  unit-tests:
-    name: Unit Tests
-    runs-on: ubuntu-latest
-    needs: quality-checks
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install project dependencies
-        if: hashFiles('requirements.txt') != ''
-        run: pip install -r requirements.txt
-
-      - name: Run unit tests
-        run: python -m unittest discover
-
-  build-modelo:
-    name: Build Modelo
-    runs-on: ubuntu-latest
-    needs: unit-tests
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Prepare build artifacts
+      - name: Install dependencies
         run: |
-          mkdir -p build
-          python -m compileall .
-          echo "Build completado" > build/resumen.txt
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pytest ruff
 
-      - name: Upload build artifacts
+      - name: Run CI script
+        env:
+          CI_SKIP_BYTECODE: "1"
+        run: ./scripts/run_ci.sh
+
+      - name: Upload compiled artifacts
+        if: success() && hashFiles('build-artifacts/bytecode.tar.gz') != ''
         uses: actions/upload-artifact@v4
         with:
-          name: modelo-build
-          path: build/
+          name: compiled-bytecode
+          path: build-artifacts/bytecode.tar.gz
