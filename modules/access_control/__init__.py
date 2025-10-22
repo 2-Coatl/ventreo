@@ -1,6 +1,5 @@
-"""RBAC helpers for spreadsheet-like data sources."""
+"""Access control module configuration."""
 
-from .apps import AccessControlConfig
-from .services import PermissionSet, SHEET_PERMISSIONS, resolve_sheet_permissions
+default_app_config = 'modules.access_control.apps.AccessControlConfig'
 
-__all__ = ['AccessControlConfig', 'PermissionSet', 'SHEET_PERMISSIONS', 'resolve_sheet_permissions']
+__all__ = ['default_app_config']

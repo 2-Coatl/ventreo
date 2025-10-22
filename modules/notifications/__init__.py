@@ -1,6 +1,5 @@
-"""Alerting helpers."""
+"""Notifications module configuration."""
 
-from .apps import NotificationsConfig
-from .services import Alert, AlertRule, NotificationPlan
+default_app_config = 'modules.notifications.apps.NotificationsConfig'
 
-__all__ = ['NotificationsConfig', 'Alert', 'AlertRule', 'NotificationPlan']
+__all__ = ['default_app_config']

@@ -1,44 +1,56 @@
-"""Tests for the access control matrix."""
+"""Tests for the access control matrix backed by Django models."""
 from __future__ import annotations
 
-from pathlib import Path
-import sys
+from rest_framework.test import APIClient
 
-import pytest
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
-
-from modules.access_control import PermissionSet, resolve_sheet_permissions
-from modules.identity import Role
+from modules.access_control.models import Sheet, SheetPermission
+from modules.access_control.services import resolve_sheet_permissions
+from modules.identity.models import Role
 
 
-@pytest.mark.parametrize(
-    'sheet, role, expected',
-    [
-        ('05_Costos_Fijos', Role.CFO, PermissionSet(read=True, write=True)),
-        ('05_Costos_Fijos', Role.GERENTE, PermissionSet(read=True)),
-        ('26_Calculadora_Impuestos', Role.CONTADOR, PermissionSet(read=True, write=True, approve=True, export=True)),
-        ('26_Calculadora_Impuestos', Role.VIEWER, PermissionSet()),
-    ],
-)
-def test_permission_matrix_matches_expected(sheet: str, role: str, expected: PermissionSet) -> None:
-    """Lookup returns the pre-defined PermissionSet for each sheet/role pair."""
+def test_permissions_endpoint_returns_flags_for_sheet() -> None:
+    """The access control API exposes permissions per sheet."""
 
-    assert resolve_sheet_permissions(sheet, [role]) == expected
+    SheetPermission.objects.all().delete()
+    Sheet.objects.all().delete()
+    Role.objects.all().delete()
+    cfo = Role.objects.create(slug='cfo', name='CFO', hierarchy_level=3, description='Finance lead')
+    sheet = Sheet.objects.create(code='05_Costos_Fijos', title='Costos Fijos', description='Control presupuestal')
+    SheetPermission.objects.create(sheet=sheet, role=cfo, can_read=True, can_write=True)
+
+    client = APIClient()
+    response = client.get('/api/access-control/sheets/05_Costos_Fijos/')
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload['code'] == '05_Costos_Fijos'
+    assert payload['permissions'][0]['can_write'] is True
 
 
-def test_combines_permissions_for_multiple_roles() -> None:
-    """Union of roles should merge write and approve flags."""
+def test_permission_service_combines_roles() -> None:
+    """Service aggregates permissions across roles."""
 
-    combined = resolve_sheet_permissions('02_Inversion_Inicial', [Role.CFO, Role.CEO])
+    SheetPermission.objects.all().delete()
+    Sheet.objects.all().delete()
+    Role.objects.all().delete()
+    sheet = Sheet.objects.create(code='02_Inversion_Inicial', title='Inversión Inicial', description='CapEx approvals')
+    cfo = Role.objects.create(slug='cfo', name='CFO', hierarchy_level=3, description='Finance lead')
+    ceo = Role.objects.create(slug='ceo', name='CEO', hierarchy_level=2, description='Chief executive')
+    SheetPermission.objects.create(sheet=sheet, role=cfo, can_read=True, can_write=True)
+    SheetPermission.objects.create(sheet=sheet, role=ceo, can_read=True, can_approve=True)
+
+    combined = resolve_sheet_permissions('02_Inversion_Inicial', ['cfo', 'ceo'])
     assert combined.read is True
     assert combined.write is True
     assert combined.approve is True
 
 
-def test_unknown_sheet_returns_empty_permissions() -> None:
-    """When the sheet is unknown, no permissions are granted by default."""
+def test_unknown_sheet_returns_empty_permission_set() -> None:
+    """Unknown sheets fallback to an empty permission set."""
 
-    assert resolve_sheet_permissions('99_No_Existe', [Role.CEO]).read is False
+    SheetPermission.objects.all().delete()
+    Sheet.objects.all().delete()
+    Role.objects.all().delete()
+    Role.objects.create(slug='ceo', name='CEO', hierarchy_level=2, description='Chief executive')
+    empty = resolve_sheet_permissions('00_Inexistente', ['ceo'])
+    assert empty.read is False
+    assert empty.write is False

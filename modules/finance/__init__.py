@@ -1,25 +1,5 @@
-"""Financial modelling domain definitions."""
+"""Finance module configuration."""
 
-from .apps import FinanceConfig
-from .domain import (
-    AccessPhase,
-    CashFlowSnapshot,
-    CostStructure,
-    DashboardView,
-    InvestmentWorkflow,
-    RevenueModel,
-    ScenarioPlan,
-    TaxObligation,
-)
+default_app_config = 'modules.finance.apps.FinanceConfig'
 
-__all__ = [
-    'FinanceConfig',
-    'AccessPhase',
-    'InvestmentWorkflow',
-    'CostStructure',
-    'RevenueModel',
-    'CashFlowSnapshot',
-    'TaxObligation',
-    'ScenarioPlan',
-    'DashboardView',
-]
+__all__ = ['default_app_config']

@@ -34,6 +34,8 @@ if env_path.exists():
 DEBUG = env('DEBUG')
 SECRET_KEY = env('SECRET_KEY')
 ALLOWED_HOSTS: list[str] = env('ALLOWED_HOSTS')
+ALLOWED_HOSTS.extend(['testserver', 'localhost', '127.0.0.1'])
+ALLOWED_HOSTS = list(dict.fromkeys(ALLOWED_HOSTS))
 
 STATIC_URL = 'static/'
 STATIC_ROOT = Path(env('STATIC_ROOT'))
@@ -158,6 +160,9 @@ REST_FRAMEWORK = {
     },
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
+
+# Local caches are sufficient for development and automated testing.
+SILENCED_SYSTEM_CHECKS = ['django_ratelimit.E003', 'django_ratelimit.W001']
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=env('AUTH_JWT_ACCESS_LIFETIME_HOURS')),

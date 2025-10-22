@@ -1,14 +1,5 @@
-"""Identity and access related domain models."""
+"""Identity module configuration."""
 
-from .apps import IdentityConfig
-from .models import ROLE_COMBINATIONS, ROLE_HIERARCHY, Role
-from .services import RoleAssignment, flatten_role_assignments
+default_app_config = 'modules.identity.apps.IdentityConfig'
 
-__all__ = [
-    'IdentityConfig',
-    'Role',
-    'ROLE_HIERARCHY',
-    'ROLE_COMBINATIONS',
-    'RoleAssignment',
-    'flatten_role_assignments',
-]
+__all__ = ['default_app_config']

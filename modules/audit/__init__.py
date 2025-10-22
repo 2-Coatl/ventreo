@@ -1,6 +1,5 @@
-"""Audit logging helpers."""
+"""Audit module configuration."""
 
-from .apps import AuditConfig
-from .services import AuditEntry, AuditLog
+default_app_config = 'modules.audit.apps.AuditConfig'
 
-__all__ = ['AuditConfig', 'AuditEntry', 'AuditLog']
+__all__ = ['default_app_config']

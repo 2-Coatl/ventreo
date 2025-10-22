@@ -1,6 +1,5 @@
-"""Dashboards wiring for persona-specific views."""
+"""Dashboard module configuration."""
 
-from .apps import DashboardsConfig
-from .configs import DASHBOARD_LAYOUTS, DashboardConfig, MetricCard
+default_app_config = 'modules.dashboards.apps.DashboardsConfig'
 
-__all__ = ['DashboardsConfig', 'DashboardConfig', 'MetricCard', 'DASHBOARD_LAYOUTS']
+__all__ = ['default_app_config']

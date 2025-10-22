@@ -1,87 +1,37 @@
-"""Identity and role metadata used across the Ventreo platform."""
+"""Identity domain models backing the RBAC architecture."""
 from __future__ import annotations
-
-from dataclasses import dataclass
-from typing import Mapping, Sequence
 
 from django.db import models
 
 
-class Role(models.TextChoices):
-    """Role definitions matching the RBAC spreadsheet matrix."""
+class Role(models.Model):
+    """Concrete role definition used by RBAC policies."""
 
-    SUPER_ADMIN = 'super_admin', 'Super Admin'
-    CEO = 'ceo', 'CEO'
-    CFO = 'cfo', 'CFO'
-    CONTROLLER = 'controller', 'Controller'
-    CONTADOR = 'contador', 'Contador'
-    ANALISTA = 'analista', 'Analista Financiero'
-    GERENTE = 'gerente', 'Gerente Operativo'
-    AUDITOR = 'auditor', 'Auditor'
-    VIEWER = 'viewer', 'Viewer'
+    slug = models.SlugField(primary_key=True, max_length=50)
+    name = models.CharField(max_length=64)
+    description = models.TextField(blank=True)
+    hierarchy_level = models.PositiveSmallIntegerField(help_text='Lower numbers indicate higher privileges.')
 
+    class Meta:
+        ordering = ('hierarchy_level', 'slug')
 
-ROLE_HIERARCHY: Mapping[str, int] = {
-    Role.SUPER_ADMIN: 1,
-    Role.CEO: 2,
-    Role.CFO: 3,
-    Role.CONTROLLER: 4,
-    Role.CONTADOR: 4,
-    Role.ANALISTA: 5,
-    Role.GERENTE: 5,
-    Role.AUDITOR: 6,
-    Role.VIEWER: 7,
-}
-"""Hierarchy levels allow quick comparisons during policy checks."""
+    def __str__(self) -> str:  # pragma: no cover - trivial representation
+        return self.name
 
 
-@dataclass(frozen=True)
-class RoleCombination:
-    """Describe the recommended role bundle for an organisation profile."""
+class RoleBundle(models.Model):
+    """Recommended combinations of roles per company size."""
 
-    name: str
-    roles: Sequence[str]
-    description: str
+    key = models.SlugField(unique=True, max_length=32)
+    title = models.CharField(max_length=64)
+    description = models.TextField()
+    roles = models.ManyToManyField(Role, related_name='bundles')
+
+    class Meta:
+        ordering = ('key',)
+
+    def __str__(self) -> str:  # pragma: no cover - trivial representation
+        return self.title
 
 
-ROLE_COMBINATIONS: Sequence[RoleCombination] = (
-    RoleCombination(
-        name='micro',
-        roles=(Role.CEO, Role.CFO, Role.CONTADOR, Role.VIEWER),
-        description='Micro team: founders combine finance roles and may grant a read-only viewer.',
-    ),
-    RoleCombination(
-        name='small',
-        roles=(Role.CEO, Role.CFO, Role.CONTADOR, Role.GERENTE, Role.VIEWER),
-        description='Small company: controller duties stay with the CFO while one manager gets scoped access.',
-    ),
-    RoleCombination(
-        name='medium',
-        roles=(
-            Role.CEO,
-            Role.CFO,
-            Role.CONTROLLER,
-            Role.CONTADOR,
-            Role.ANALISTA,
-            Role.GERENTE,
-            Role.AUDITOR,
-        ),
-        description='Medium company: segregated finance duties and operational managers for up to four areas.',
-    ),
-    RoleCombination(
-        name='enterprise',
-        roles=(
-            Role.SUPER_ADMIN,
-            Role.CEO,
-            Role.CFO,
-            Role.CONTROLLER,
-            Role.CONTADOR,
-            Role.ANALISTA,
-            Role.GERENTE,
-            Role.AUDITOR,
-            Role.VIEWER,
-        ),
-        description='Large organisation: full RBAC surface with compliance and stakeholder views.',
-    ),
-)
-"""Suggested bundles make it easy to bootstrap deployments per company size."""
+__all__ = ['Role', 'RoleBundle']
