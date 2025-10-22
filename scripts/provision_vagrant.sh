@@ -6,12 +6,10 @@ sudo apt-get update
 sudo apt-get install -y software-properties-common
 sudo add-apt-repository -y ppa:deadsnakes/ppa
 sudo apt-get update
-sudo apt-get install -y python3.11 python3.11-venv python3.11-distutils git
+sudo apt-get install -y python3.11 python3.11-venv python3.11-distutils git sqlite3
 
 cd /workspace
-python3.11 -m venv .venv
+make install
 source .venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt pytest ruff
 
 ./scripts/run_ci.sh
