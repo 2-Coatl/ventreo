@@ -1,6 +1,7 @@
 """Tests that cover the SecurityRAT helper environment configuration."""
 from __future__ import annotations
 
+import subprocess
 from pathlib import Path
 
 
@@ -25,11 +26,30 @@ def test_docker_compose_exports_shared_volume():
     assert "build:" in compose and "dockerfile: Dockerfile" in compose
 
 
-def test_makefile_targets_use_vagrant_and_compose():
-    makefile = (REPO_ROOT / "Makefile").read_text(encoding="utf-8")
+def _run_make_target(target: str) -> str:
+    completed = subprocess.run(
+        ["make", "-n", target],
+        cwd=REPO_ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return completed.stdout
 
-    assert "securityrat-up:" in makefile and "vagrant up --provision" in makefile
-    assert "securityrat-logs:" in makefile and "docker compose logs --tail=200 $(SECURITYRAT_SERVICE)" in makefile
-    assert "securityrat-export:" in makefile
-    assert "docker compose cp $(SECURITYRAT_SERVICE):$(SECURITYRAT_EXPORT_PATH)/." in makefile
-    assert "mkdir -p /vagrant/$(SECURITYRAT_EXPORT_DIR)/$$timestamp" in makefile
+
+def test_makefile_targets_use_vagrant_and_compose():
+    up_output = _run_make_target("securityrat-up")
+    logs_output = _run_make_target("securityrat-logs")
+    export_output = _run_make_target("securityrat-export")
+
+    assert "cd docs/security/securityrat && vagrant up --provision" in up_output
+    assert (
+        "cd docs/security/securityrat && vagrant ssh -c \"cd /vagrant/docs/security/securityrat"
+        in logs_output
+    )
+    assert "docker compose logs --tail=200 securityrat\"" in logs_output
+
+    assert "Exportando artefactos SecurityRAT" in export_output
+    assert "vagrant ssh -c \"cd /vagrant/docs/security/securityrat" in export_output
+    assert "docker compose cp securityrat:/opt/securityrat/exports/." in export_output
+    assert "chown -R vagrant:vagrant" in export_output
