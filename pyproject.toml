@@ -55,8 +55,8 @@ select = ["E", "F", "I"]
 [tool.pytest.ini_options]
 minversion = "8.0"
 testpaths = ["tests"]
-addopts = "-ra"
-DJANGO_SETTINGS_MODULE = "site.settings"
+addopts = "-ra -p no:django"
+pythonpath = ["."]
 
 [tool.bandit]
 targets = ["."]
